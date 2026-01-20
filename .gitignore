@@ -1,0 +1,9 @@
+#excel
+*.xlsx
+
+#output
+*.png
+*.txt
+
+#python
+__pycache__/
