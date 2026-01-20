@@ -4,6 +4,7 @@
 #output
 *.png
 *.txt
+*.jpg
 
 #python
 __pycache__/
