@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Image Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- XLSX process -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Grade Image Generator</h1>
+            <p>Based on HTML5 Canvas </p>
+        </header>
+
+        <main>
+            <div class="control-panel">
+                <div class="input-group">
+                    <label for="semesterInput">Semester name</label>
+                    <input type="text" id="semesterInput" value="25Fall" placeholder="例如: 25Fall">
+                </div>
+                
+                <div class="input-group">
+                    <label for="fileInput">Upload Excel file (.xlsx)</label>
+                    <input type="file" id="fileInput" accept=".xlsx, .xls">
+                </div>
+            </div>
+
+            <div id="resultArea" class="result-area">
+                <div class="actions">
+                    <button id="downloadBtn" class="btn-primary">Save as Image</button>
+                </div>
+                <div class="canvas-wrapper">
+                    <canvas id="gradeCanvas"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

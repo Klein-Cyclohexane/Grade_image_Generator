@@ -76,3 +76,7 @@ python grade_image_generator.py my_grades.xlsx 25Fall grade_report.png
 - 等级使用标准格式（A+, A, A-, B+, B, B-, C+, C, C-, F, P, NP），无法识别分数成绩（orz）
 - P和NP等级的课程不计入GPA计算
 - 确保所有数值列（绩点、学分）为数字格式
+
+
+## Update
+更新了前端版本
