@@ -99,7 +99,7 @@ class GradeImageGenerator:
             self.df = pd.read_excel(self.excel_path)
             # 检查列
             required_columns = ['科目', '代号', '等级', '绩点', '学分', 
-                              '类型', '授课教师', '开课院系']
+                              '类型', '授课教师', '开课院系', '课程状态']
             missing_columns = [col for col in required_columns if col not in self.df.columns]
             if missing_columns:
                 raise ValueError(f"Excel文件缺少必需的列: {', '.join(missing_columns)}")
@@ -150,12 +150,16 @@ class GradeImageGenerator:
             包含总学分、总均绩、科目数量
         """
         # 过滤掉P和NP的课程（通常不计入GPA），F档计入
-        gpa_courses = self.df[~self.df['等级'].isin(['P', 'NP', 'p', 'np'])]
+        # 同时排除阶段课程（不计入GPA）
+        gpa_courses = self.df[
+            (~self.df['等级'].isin(['P', 'NP', 'p', 'np'])) & 
+            (self.df['课程状态'] != '阶段课程')
+        ]
         
-        # 计算总学分
+        # 计算总学分（所有课程，包括阶段课程）
         total_credits = self.df['学分'].sum()
         
-        # 计算加权平均绩点（F档计入总学分）
+        # 计算加权平均绩点（F档计入总学分，但排除阶段课程）
         if len(gpa_courses) > 0:
             weighted_gpa = (gpa_courses['绩点'] * gpa_courses['学分']).sum() / gpa_courses['学分'].sum()
             total_gpa = round(weighted_gpa, 2)
@@ -383,9 +387,19 @@ class GradeImageGenerator:
         course_type = str(row['类型']) if pd.notna(row['类型']) else ""
         teacher = str(row['授课教师']) if pd.notna(row['授课教师']) else ""
         department = str(row['开课院系']) if pd.notna(row['开课院系']) else ""
+        course_status = str(row['课程状态']) if pd.notna(row['课程状态']) else ""
         
         # 课程名称
         draw.text((x + 100, y + 15), course_name, fill=text_color, font=font_medium)
+        
+        # 如果是阶段课程，在名称右侧添加红星
+        if course_status == '阶段课程':
+            # 获取课程名称的宽度
+            name_bbox = draw.textbbox((0, 0), course_name, font=font_medium)
+            name_width = name_bbox[2] - name_bbox[0]
+            # 在名称右侧绘制红星（使用Unicode字符 ★）
+            star_x = x + 100 + name_width + 5
+            draw.text((star_x, y + 15), "★", fill=(255, 0, 0), font=font_medium)  # 红色
         
         # 详细信息
         detail_text = f"{course_type} {teacher} ({department})"

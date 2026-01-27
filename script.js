@@ -6,13 +6,13 @@ const CONFIG = {
         'A+': '#6dff4d', 'A': '#a9ff48', 'A-': '#a9ff48',
         'B+': '#dfff64', 'B': '#dfff64', 'B-': '#dfff64',
         'C+': '#ffea6d', 'C': '#ffea6d', 'C-': '#ffea6d',
-        'F': '#4f94cd', 'P': '#d9d9f5', 'NP': '#4f94cd'
+        'F': '#4f94cd', 'P': '#d9d9f3', 'NP': '#4f94cd'
     },
     GRADE_COLORS_BG: {
         'A+': '#76de60', 'A': '#9edc5f', 'A-': '#9edc5f',
         'B+': '#c1dd5e', 'B': '#c1dd5e', 'B-': '#c1dd5e',
         'C+': '#decb61', 'C': '#decb61', 'C-': '#decb61',
-        'F': '#4f94cd', 'P': '#d9d9f5', 'NP': '#4f94cd'
+        'F': '#4f94cd', 'P': '#d9d9f3', 'NP': '#4f94cd'
     },
     GRADE_FILL_RATIO: {
         'A+': 1.0, 'A': 0.9, 'A-': 0.8, 'B+': 0.7, 'B': 0.6,
@@ -64,7 +64,8 @@ function renderGrades(data) {
         credits: parseFloat(item['学分']) || 0,
         type: item['类型'] || '',
         teacher: item['授课教师'] || '',
-        dept: item['开课院系'] || ''
+        dept: item['开课院系'] || '',
+        status: item['课程状态'] || ''
     }));
 
     // 2. data sorting
@@ -76,7 +77,10 @@ function renderGrades(data) {
     });
 
     // 3. statistics calculation
-    const gpaCourses = courses.filter(c => !['P', 'NP'].includes(c.grade));
+    // 排除P、NP和阶段课程
+    const gpaCourses = courses.filter(c => 
+        !['P', 'NP'].includes(c.grade) && c.status !== '阶段课程'
+    );
     const totalCredits = courses.reduce((sum, c) => sum + c.credits, 0);
     const totalGPA = gpaCourses.length > 0 
         ? (gpaCourses.reduce((sum, c) => sum + (c.gpa * c.credits), 0) / gpaCourses.reduce((sum, c) => sum + c.credits, 0)).toFixed(2)
@@ -154,6 +158,15 @@ function drawCourseCard(course, x, y) {
 
     ctx.font = 'bold 16px "Noto Sans SC"';
     ctx.fillText(course.name, x + 100, y + 35);
+    
+    // 如果是阶段课程，在名称右侧添加红星
+    if (course.status === '阶段课程') {
+        const nameWidth = ctx.measureText(course.name).width;
+        ctx.fillStyle = '#ff0000'; // 红色
+        ctx.font = 'bold 16px "Noto Sans SC"';
+        ctx.fillText('★', x + 100 + nameWidth + 5, y + 35);
+        ctx.fillStyle = '#000000'; // 恢复黑色
+    }
     
     ctx.font = '14px "Noto Sans SC"';
     let detail = `${course.type} ${course.teacher} (${course.dept})`;
